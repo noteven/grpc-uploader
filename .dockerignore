@@ -1,0 +1,14 @@
+*~
+.git
+.idea
+.vscode
+.env
+.github
+.editorconfig
+.gitignore
+.pgdata
+_build
+deps
+Dockerfile
+Makefile
+README*

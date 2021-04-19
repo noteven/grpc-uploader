@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+  grpc_uploader:
+    build: .
+    env_file: .env
+    links:
+      - db
+    ports:
+      - "4000:4000"
+    networks:
+      - internal
+
+  db:
+    image: postgres:alpine
+    restart: unless-stopped
+    environment:
+        POSTGRES_DB:       ${DB_DATABASE}
+        POSTGRES_USER:     ${DB_USER}
+        POSTGRES_PASSWORD: ${DB_PASSWORD}
+        PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - db:/var/lib/mysql
+#      - ./pgdata:/var/lib/postgresql/data
+#     - ./dump:/docker-entrypoint-initdb.d:ro
+    networks:
+      - internal
+
+volumes:
+  db:
+  storage:
+    name: ${PROJECT_NAME}_storage
+
+
+networks:
+  internal:
+    name: ${PROJECT_NAME}_internal

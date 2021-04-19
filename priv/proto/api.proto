@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+package GRPCUploader;
+
+//TODO: File-upload calls.
+
+service API {
+
+  /*
+  * Creates a new token for claiming.
+  */
+  rpc CreateToken(TokenRequest) returns (TokenResponse);
+
+  /*
+  * Associates a credential pair to a token, thus 'claiming it'.
+  */
+  rpc ClaimToken(ClaimRequest) returns (ClaimResponse);
+
+  /*
+  * Accepts a token _or_ credential pair for authentication.
+  */
+  rpc Authenticate(AuthRequest) returns (AuthResponse);
+}
+
+message TokenRequest {
+}
+
+message ClaimRequest {
+  Token token = 1;              // Token being claimed
+  Credentials credentials = 2;  // Credential pair to be associatted with token
+}
+
+message AuthRequest {
+  oneof ident  {
+    Token token = 1;
+    Credentials credentials = 2;
+  }
+}
+
+message TokenResponse {
+  enum Status {
+    OK = 0;
+    INVALID_TOKEN = 1;
+    INVALID_CREDENTIALS = 2;
+  }
+
+  oneof response {
+    Token token = 1;
+    Status status = 2;
+  }
+}
+
+message ClaimResponse {
+  enum Status {
+    OK = 0;
+    INVALID_TOKEN = 1;
+    INVALID_CREDENTIALS = 2;
+    ALREADY_CLAIMED = 3;
+  }
+  Status status = 1;
+  string message = 2;
+}
+
+message AuthResponse {
+  enum Status {
+    OK = 0;
+    INVALID = 1;
+    NOT_AUTHORIZED = 2;
+  }
+  Status status = 1;
+  string message = 2;
+}
+
+
+message Token {
+  bytes token = 1;
+}
+
+message Credentials {
+  string username = 1;
+
+  message Password {
+    bytes value = 1;
+
+    enum Encoding {
+      PLAIN_TEXT = 0;
+      ARGON2 = 1;
+    }
+    Encoding hash = 2;
+  }
+  Password password = 2;
+}
