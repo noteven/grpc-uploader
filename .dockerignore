@@ -2,7 +2,7 @@
 .git
 .idea
 .vscode
-.env
+.env.example
 .github
 .editorconfig
 .gitignore

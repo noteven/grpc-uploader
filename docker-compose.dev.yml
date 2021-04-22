@@ -1,0 +1,16 @@
+version: '3.9'
+services:
+  grpc_uploader:
+    image: grpc_uploader_dev
+    build:
+      target: dev
+    ports:
+      - 4000:4000
+    volumes:
+      - .:/opt/app
+    environment:
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}

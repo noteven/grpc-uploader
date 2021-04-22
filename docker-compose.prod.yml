@@ -1,0 +1,6 @@
+version: '3.9'
+services:
+  grpc_uploader:
+    image: grpc_uploader_prod
+    build:
+      target: prod

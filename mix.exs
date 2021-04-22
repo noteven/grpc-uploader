@@ -10,7 +10,14 @@ defmodule GRPCUploader.MixProject do
       deps: deps(),
       aliases: aliases(),
       dialyzer: [
-        flags: [:unmatched_returns, :error_handling, :race_conditions, :no_opaque, :underspecs, :unknown],
+        flags: [
+          :unmatched_returns,
+          :error_handling,
+          :race_conditions,
+          :no_opaque,
+          :underspecs,
+          :unknown
+        ]
       ]
     ]
   end
@@ -29,7 +36,7 @@ defmodule GRPCUploader.MixProject do
       # Protobuf/GRPC
       {:protobuf, "~> 0.7.1"},
       {:google_protos, "~> 0.1"},
-      {:grpc, github: "elixir-grpc/grpc"},
+      {:grpc, github: "sevenshores/grpc-elixir", branch: "main"},
       {:cowlib, "~> 2.9.0", override: true},
 
       # Datasource
@@ -51,11 +58,31 @@ defmodule GRPCUploader.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "deps.compile", "ecto.setup"],
-      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
-      "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      check: ["format", "deps.unlock --check-unused", "credo", "dialyzer --quiet --format dialyxir"]
+      setup: [
+        "deps.get",
+        "deps.compile",
+        "ecto.setup"
+      ],
+      "ecto.setup": [
+        "ecto.create",
+        "ecto.migrate",
+        "run priv/repo/seeds.exs"
+      ],
+      "ecto.reset": [
+        "ecto.drop",
+        "ecto.setup"
+      ],
+      test: [
+        "ecto.create --quiet",
+        "ecto.migrate --quiet",
+        "test"
+      ],
+      check: [
+        "format",
+        "deps.unlock --check-unused",
+        "credo",
+        "dialyzer --quiet --format dialyxir"
+      ]
     ]
   end
 end

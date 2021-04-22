@@ -1,5 +1,5 @@
 # This file is responsible for configuring your application
-# and its dependencies with the aid of the Mix.Config module.
+# and its dependencies at compile-time.
 #
 # This configuration file is loaded before any dependency and
 # is restricted to this project.
@@ -7,13 +7,11 @@
 # General application configuration
 import Config
 
-config :grpc_uploader, GRPCUploader.Repo,
-  database: "grpc_uploader",
-  username: "grpc_uploader",
-  password: "grpc_uploader",
-  hostname: "localhost"
+config :grpc_uploader,
+  namespace: GRPCUploader,
+  ecto_repos: [GRPCUploader.Repo],
+  generators: [binary_id: true]
 
-# Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]

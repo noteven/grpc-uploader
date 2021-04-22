@@ -5,15 +5,8 @@ defmodule GRPCUploader.Application do
 
   use Application
 
-# Define your endpoint
-defmodule GRPCUploader.Endpoint do
-  use GRPC.Endpoint
-
-  intercept GRPC.Logger.Server
-  run GRPCUploader.API.Server
-end
-
   @impl true
+  @spec start(any, any) :: {:error, any} | {:ok, pid}
   def start(_type, _args) do
     children = [
       {GRPC.Server.Supervisor, {GRPCUploader.Endpoint, 4000}}
