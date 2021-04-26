@@ -35,14 +35,14 @@ RUN mix do deps.get, deps.compile
 COPY . .
 
 # Create protobuffer files
-RUN PROJ_ROOT=$(pwd) cd ${PROTO_DIR} && \
-    PATH=~/.mix/escripts/:$PATH protoc --elixir_out=plugins=grpc:${PROJ_ROOT}/lib/ *.proto
-
+RUN PATH=~/.mix/escripts/:$PATH protoc --proto_path=${PROTO_DIR} --elixir_out=plugins=grpc:lib ${PROTO_DIR}/*.proto
 # Build release package
 RUN mix release
 
 # Development image. Base it off build image and not a clean
-# Elixir image due to protoc/protobuf dependencies
+# Elixir image due to protoc/protobuf dependencies. Note that
+# this means the dev image is bloated with the Elixir release
+# artifacts from the build image.
 FROM build AS dev
 WORKDIR /opt/app
 
