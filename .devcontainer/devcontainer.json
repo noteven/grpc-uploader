@@ -1,0 +1,21 @@
+//devcontainer.json
+{
+  "name": "grpc_uploader",
+  "dockerComposeFile": ["../docker-compose.yml", "../docker-compose.dev.yml", "docker-compose.vscode.yml"],
+  "service": "grpc_uploader",
+  "workspaceFolder": "/opt/app",
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/sh"
+  },
+  "extensions": [
+    "iampeterbanjo.elixirlinter",
+    "jakebecker.elixir-ls",
+    "eamodio.gitlens",
+    "zxh404.vscode-proto3",
+    "editorconfig.editorconfig",
+    "bierner.markdown-mermaid",
+    "bpruitt-goddard.mermaid-markdown-syntax-highlighting",
+    "christian-kohler.path-intellisense"
+  ],
+  "forwardPorts": [4000]
+}

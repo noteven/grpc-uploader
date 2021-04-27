@@ -2,11 +2,16 @@ version: '3.9'
 services:
   grpc_uploader:
     image: grpc_uploader_dev
+    user: "${UID}:${GID}"
     build:
       target: dev
+      args:
+        MIX_ENV: dev
     ports:
       - 4000:4000
     volumes:
+      # Please note changing the mount-point here would require changing
+      # the workspaceFolder property in .devcontainer/devcontainer.json
       - .:/opt/app
     environment:
       DB_DATABASE: ${DB_DATABASE}
