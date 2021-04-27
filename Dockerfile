@@ -57,6 +57,12 @@ ENV MIX_ENV=${MIX_ENV}
 # Add escripts path for convenience.
 ENV PATH="/root/.mix/escripts/:${PATH}"
 
+# This step installs all the build tools we'll need
+RUN apk update && \
+    apk upgrade --no-cache && \
+    apk add --no-cache \
+      openssh-client
+
 WORKDIR /opt/app
 
 # Mix is available, so use Mix task to start gRPC server.
