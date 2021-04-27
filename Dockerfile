@@ -4,6 +4,15 @@
 ARG MIX_ENV=prod
 ARG PROTO_DIR=./priv/proto
 
+
+
+################################################################
+#                          BUILD STAGE                         #
+################################################################
+# Build stage defines the base dependencies for building the   #
+# project, be it for development or production. Project files  #
+# are not mounted in, for reasoning see dev stage comments.    #
+################################################################
 FROM elixir:alpine AS build
 ARG MIX_ENV
 ARG PROTO_DIR
@@ -21,36 +30,65 @@ RUN apk update && \
       git \
       protobuf \
       build-base \
-      postgresql-client && \
-    mix local.rebar --force && \
+      postgresql-client
+
+RUN mix local.rebar --force && \
     mix local.hex --force && \
     mix escript.install --force hex protobuf
-
 
 # Fetch dependencies and compile
 COPY mix.exs mix.lock ./
 RUN mix do deps.get, deps.compile
 
-# Build Release
-COPY . .
-
-# Create protobuffer files
-RUN PATH=~/.mix/escripts/:$PATH protoc --proto_path=${PROTO_DIR} --elixir_out=plugins=grpc:lib ${PROTO_DIR}/*.proto
-# Build release package
-RUN mix release
-
-# Development image. Base it off build image and not a clean
-# Elixir image due to protoc/protobuf dependencies. Note that
-# this means the dev image is bloated with the Elixir release
-# artifacts from the build image.
+################################################################
+#                          DEV STAGE                           #
+################################################################
+# Dev image does not copy in any of the project files. It is   #
+# meant to only provide an development container into which    #
+# the project may be mounted to from the host environment.     #
+# This stage is separate from the build stage as it may be     #
+# desirable to have development dependencies which are         #
+# separate from the general project build requirements.        #
+################################################################
 FROM build AS dev
+ARG MIX_ENV
+
+ENV MIX_ENV=${MIX_ENV}
+# Add escripts path for convenience.
+ENV PATH="/root/.mix/escripts/:${PATH}"
+
 WORKDIR /opt/app
 
 # Mix is available, so use Mix task to start gRPC server.
 CMD ["mix", "grpc.server"]
 
-# Production image. Need to install Elixir/Erlang system dependencies
-# due to base being a clean alpine image (not an Elixir image).
+################################################################
+#                     RELEASE STAGE                            #
+################################################################
+# Release stage copies in project files for building Mix       #
+# release packages. The release package is then copied over    #
+# into a clean image in the prod stage.                        #
+################################################################
+FROM build AS release
+ARG MIX_ENV
+ENV MIX_ENV=${MIX_ENV}
+
+WORKDIR /opt/app
+
+COPY . ./
+
+# Generate protofiles. Set path for command only as it is a one-off use.
+RUN PATH=/root/.mix/escripts/:${PATH} mix proto.build
+
+RUN mix release
+
+################################################################
+#                     PROD STAGE                               #
+################################################################
+# Production image. Mix release package is copied over from    #
+# the release stage. Elixir/Erlang system dependencies must be #
+# installed due to base being a clean alpine image.            #
+################################################################
 FROM alpine:latest AS prod
 ARG MIX_ENV
 ENV MIX_ENV=${MIX_ENV}
@@ -68,7 +106,7 @@ RUN apk update && \
 
 # Copy over mix release from build image. This will include the
 # Erlang/OTP runtime and compiled project modules.
-COPY --from=build /opt/app/_build/${MIX_ENV}/rel/grpc_uploader .
+COPY --from=release /opt/app/_build/${MIX_ENV}/rel/grpc_uploader .
 
 # Run release script
 CMD ["bin/grpc_uploader", "start"]

@@ -12,3 +12,4 @@ deps
 Dockerfile
 Makefile
 README*
+.elixir_ls
