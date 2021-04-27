@@ -61,7 +61,11 @@ defmodule GRPCUploader.MixProject do
       setup: [
         "deps.get",
         "deps.compile",
+        "proto.build",
         "ecto.setup"
+      ],
+      "proto.build": [
+        "cmd protoc --proto_path=./priv/proto --elixir_out=plugins=grpc:lib priv/proto/*.proto"
       ],
       "ecto.setup": [
         "ecto.create",
