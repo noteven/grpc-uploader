@@ -19,12 +19,3 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
-# Uncomment the following lines to provision SSH keys into the container.
-# Change the file path for secrets.user_ssh_key.file as needed.
-#      secrets:
-#      - user_ssh_key
-
-#secrets:
-#  user_ssh_key:
-#    file: ~/.ssh/keyfile
-
